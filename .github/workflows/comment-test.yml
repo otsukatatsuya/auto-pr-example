@@ -11,6 +11,8 @@ on:
 jobs:
   auto_approve:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     if: github.event.issue.pull_request && contains(github.event.comment.body, 'trigger')
     steps:
       - name: Checkout the repo
