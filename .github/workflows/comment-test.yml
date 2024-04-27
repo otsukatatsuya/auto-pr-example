@@ -22,7 +22,7 @@ jobs:
       - name: print DYNAMIC_LABEL
         run: echo $DYNAMIC_LABEL
       - name: Get PRs with label 'auto-pr'
-        run: echo "PR_LIST=$(gh pr list --label '$DYNAMIC_LABEL' --json number,state --jq '.[] | select(.state == \"OPEN\") | .number')" >> $GITHUB_ENV
+        run: echo "PR_LIST=$(gh pr list --label \"$DYNAMIC_LABEL\" --json number,state --jq '.[] | .number')" >> $GITHUB_ENV
       - name: print pr list
         run: echo $PR_LIST
       - name: Auto-approve PRs
