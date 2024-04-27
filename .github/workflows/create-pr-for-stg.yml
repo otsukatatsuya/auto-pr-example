@@ -1,0 +1,34 @@
+name: create a pull request for stg # 参考: https://elw.co.jp/blog/tech/github-actions-pr/
+on:
+  pull_request:
+    types: [opened]
+    branches: [prd]
+jobs:
+  action:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.ref != 'stg' #派生元がstgの場合は実行しない。stg->prd作成時に2重で作成されてしまうので。
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set variables
+        run: |
+          echo 'PR_BODY<<EOF' >> $GITHUB_ENV
+          echo "the same as #${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "---" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "${{ github.event.pull_request.body }}" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - name: pull-request
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "${{ github.event.pull_request.head.ref }}"
+          destination_branch: stg
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_label: stg
+          pr_title: "${{ github.event.pull_request.title }}"
+          pr_body: |
+            ${{ env.PR_BODY }}
+      - name: Labeling
+        uses: andymckay/labeler@master
+        with:
+          add-labels: "stg"
