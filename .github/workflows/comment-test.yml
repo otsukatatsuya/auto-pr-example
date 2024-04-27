@@ -16,11 +16,11 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v3
       - name: Define dynamic label
-        run: echo "DYNAMIC_LABEL=auto-pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+        run: echo "DYNAMIC_LABEL=auto-pr-${{ github.event.issue.number }}" >> $GITHUB_ENV
       - name: print DYNAMIC_LABEL
         run: echo $DYNAMIC_LABEL
       - name: Get PRs with label 'auto-pr'
-        run: echo "PR_LIST=$(gh pr list --label '$DYNAMIC_LABEL' --json number,state --jq '.[] | select(.state == "OPEN") | .number')" >> $GITHUB_ENV
+        run: echo "PR_LIST=$(gh pr list --label '$DYNAMIC_LABEL' --json number,state --jq '.[] | select(.state == \"OPEN\") | .number')" >> $GITHUB_ENV
       - name: print pr list
         run: echo $PR_LIST
       - name: Auto-approve PRs
