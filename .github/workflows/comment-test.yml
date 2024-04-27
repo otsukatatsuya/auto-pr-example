@@ -1,0 +1,34 @@
+name: Trigger on PR Comment for Testing
+
+on:
+  issue_comment:
+    types: [created]
+    branches:
+      - prd
+      - stg
+      - develop
+
+jobs:
+  auto_approve:
+    runs-on: ubuntu-latest
+    if: github.event.issue.pull_request && contains(github.event.comment.body, 'trigger')
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+
+      - name: Setup GitHub CLI
+        run: |
+          gh auth setup-git
+          gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
+      - name: Define dynamic label
+        run: echo "DYNAMIC_LABEL=auto-pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      - name: Get PRs with label 'auto-pr'
+        run: echo "PR_LIST=$(gh pr list --label '$DYNAMIC_LABEL' --json number,state --jq '.[] | select(.state == "OPEN") | .number')" >> $GITHUB_ENV
+
+      - name: Auto-approve PRs
+        run: |
+          for pr in $PR_LIST; do
+            gh pr review --approve --body "This PR was automatically approved by GitHub Actions." $pr
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
