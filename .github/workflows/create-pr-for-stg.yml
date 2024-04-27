@@ -12,7 +12,7 @@ jobs:
       - name: Set variables
         run: |
           echo 'PR_BODY<<EOF' >> $GITHUB_ENV
-          echo "the same as #${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "#${{ github.event.pull_request.number }}から自動作成されたPR。${{ github.event.pull_request.head.ref }}→stg用。" >> $GITHUB_ENV
           echo "" >> $GITHUB_ENV
           echo "---" >> $GITHUB_ENV
           echo "" >> $GITHUB_ENV
@@ -28,7 +28,3 @@ jobs:
           pr_title: "${{ github.event.pull_request.title }}"
           pr_body: |
             ${{ env.PR_BODY }}
-      - name: Labeling
-        uses: andymckay/labeler@master
-        with:
-          add-labels: "stg"
