@@ -24,7 +24,7 @@ jobs:
           source_branch: "${{ github.event.pull_request.head.ref }}"
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_label: auto-pr
+          pr_label: auto-pr-${{ github.event.pull_request.number }}
           pr_title: "[toDevelop] ${{ github.event.pull_request.title }}"
           pr_body: |
             ${{ env.PR_BODY }}
