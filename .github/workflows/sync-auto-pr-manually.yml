@@ -39,11 +39,11 @@ jobs:
             echo "Syncing changes to PR #$pr"
             TARGET_BRANCH=$(gh pr view $pr --json headRefName --jq '.headRefName')
             echo $TARGET_BRANCH
-            git fetch origin $SOURCE_BRANCH:$SOURCE_BRANCH
-            git checkout $TARGET_BRANCH
-            git merge $SOURCE_BRANCH --no-ff --no-commit
-            git commit -m "Merged changes from PR #${{ github.event.inputs.prNumber }} into PR #$pr"
-            git push origin $TARGET_BRANCH
+            # git fetch origin $SOURCE_BRANCH:$SOURCE_BRANCH
+            # git checkout $TARGET_BRANCH
+            # git merge $SOURCE_BRANCH --no-ff --no-commit
+            # git commit -m "Merged changes from PR #${{ github.event.inputs.prNumber }} into PR #$pr"
+            # git push origin $TARGET_BRANCH
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
