@@ -1,4 +1,4 @@
-name: create a pull request for dev # 参考: https://elw.co.jp/blog/tech/github-actions-pr/
+name: create a pull request for develop # 参考: https://elw.co.jp/blog/tech/github-actions-pr/
 on:
   pull_request:
     types: [opened]
@@ -6,7 +6,7 @@ on:
 jobs:
   action:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.ref != 'dev' #派生元がdevの場合は実行しない。dev->stg作成時に2重で作成されてしまうので。
+    if: github.event.pull_request.head.ref != 'develop' #派生元がdevelopの場合は実行しない。develop->stg作成時に2重で作成されてしまうので。
     steps:
       - uses: actions/checkout@v3
       - name: Set variables
@@ -22,13 +22,13 @@ jobs:
         uses: repo-sync/pull-request@v2
         with:
           source_branch: "${{ github.event.pull_request.head.ref }}"
-          destination_branch: dev
+          destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_label: dev
+          pr_label: develop
           pr_title: "${{ github.event.pull_request.title }}"
           pr_body: |
             ${{ env.PR_BODY }}
       - name: Labeling
         uses: andymckay/labeler@master
         with:
-          add-labels: "dev"
+          add-labels: "develop"
