@@ -14,11 +14,6 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
-
-      - name: Setup GitHub CLI
-        run: |
-          gh auth setup-git
-          gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
       - name: Define dynamic label
         run: echo "DYNAMIC_LABEL=auto-pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
       - name: Get PRs with label 'auto-pr'
