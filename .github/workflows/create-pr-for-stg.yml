@@ -1,7 +1,7 @@
 name: create a pull request for stg # 参考: https://elw.co.jp/blog/tech/github-actions-pr/
 on:
   pull_request:
-    types: [opened]
+    types: [opened,reopened]
     branches: [prd]
 jobs:
   action:
