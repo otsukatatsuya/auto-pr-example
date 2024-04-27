@@ -1,0 +1,44 @@
+name: Sync and Manual Trigger PRs
+
+on:
+  workflow_dispatch:
+    inputs:
+      prNumber:
+        description: 'PR Number to Sync (Optional, defaults to all PRs with label)'
+        required: false
+        default: ''
+
+jobs:
+  sync_prs:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+
+      - name: Define dynamic label based on the PR number
+        run: echo "DYNAMIC_LABEL=sync-pr-${{ github.event.inputs.prNumber }}" >> $GITHUB_ENV
+
+      - name: Print dynamic label
+        run: echo $DYNAMIC_LABEL
+
+      - name: Get PRs with the dynamic label
+        run: |
+          PR_LIST=$(gh pr list --label "$DYNAMIC_LABEL" --json number --jq '.[] | .number')
+          echo "PR_LIST=$PR_LIST" >> $GITHUB_ENV
+
+      - name: Print PR list
+        run: echo $PR_LIST
+
+      - name: Sync changes to other PRs
+        run: |
+          for pr in $PR_LIST; do
+            echo "Syncing changes to PR #$pr"
+            git checkout $pr
+            git merge ${{ github.event.pull_request.number }}
+            git commit -m "Merged changes from PR #${{ github.event.inputs.prNumber }} into PR #$pr"
+            git push origin $pr
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
