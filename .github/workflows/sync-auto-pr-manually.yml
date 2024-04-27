@@ -33,12 +33,17 @@ jobs:
 
       - name: Sync changes to other PRs
         run: |
+          SOURCE_BRANCH=$(gh pr view ${{ github.event.inputs.prNumber }} --json headRefName --jq '.headRefName')
+          echo $SOURCE_BRANCH
           for pr in $PR_LIST; do
             echo "Syncing changes to PR #$pr"
-            git checkout $pr
-            git merge ${{ github.event.pull_request.number }}
+            TARGET_BRANCH=$(gh pr view $pr --json headRefName --jq '.headRefName')
+            echo $TARGET_BRANCH
+            git fetch origin $SOURCE_BRANCH:$SOURCE_BRANCH
+            git checkout $TARGET_BRANCH
+            git merge $SOURCE_BRANCH --no-ff --no-commit
             git commit -m "Merged changes from PR #${{ github.event.inputs.prNumber }} into PR #$pr"
-            git push origin $pr
+            git push origin $TARGET_BRANCH
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
