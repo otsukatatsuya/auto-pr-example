@@ -1,16 +1,17 @@
-name: Approve Auto PR # create-pr workflowで作成されたPRを自動でApprovedするworkflow
+name: Trigger on PR Comment for Testing
 
 on:
-  pull_request_review:
-    types: [submitted]
+  issue_comment:
+    types: [created]
     branches:
-      - stg
       - prd
+      - stg
+      - develop
 
 jobs:
   auto_approve:
     runs-on: ubuntu-latest
-    if: github.event.review.state == 'approved'
+    if: github.event.issue.pull_request && contains(github.event.comment.body, 'trigger')
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
