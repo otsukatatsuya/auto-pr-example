@@ -1,0 +1,32 @@
+name: Approve Auto PR # create-pr workflowで作成されたPRを自動でApprovedするworkflow
+
+on:
+  pull_request_review:
+    types: [submitted]
+    branches:
+      - stg
+      - prd
+
+jobs:
+  auto_approve:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+
+      - name: Setup GitHub CLI
+        run: |
+          gh auth setup-git
+          gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get PRs with label 'auto-pr'
+        run: echo "PR_LIST=$(gh pr list --label 'auto-pr' --json number,state --jq '.[] | select(.state == "OPEN") | .number')" >> $GITHUB_ENV
+
+      - name: Auto-approve PRs
+        run: |
+          for pr in $PR_LIST; do
+            gh pr review --approve --body "This PR was automatically approved by GitHub Actions." $pr
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
